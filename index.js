@@ -29,6 +29,31 @@ server.get("/api/cohorts/:id", async (req, res) => {
   }
 });
 
+server.get("/api/cohorts/:id/students", async (req, res) => {
+  try {
+    const students = await db("students")
+      .where({ cohort_id: req.params.id })
+      .first();
+    res.status(200).json(students);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+server.post("/api/cohorts", async (req, res) => {
+  try {
+    const [id] = await db("cohorts").insert(req.body);
+
+    const cohort = await db("cohorts")
+      .where({ id })
+      .first();
+
+    res.status(200).json(cohort);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
 const port = process.env.PORT || 5000;
 server.listen(port, () =>
   console.log(`\n** API running on http://localhost:${port} **\n`)
